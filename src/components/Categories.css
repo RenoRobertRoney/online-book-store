@@ -1,0 +1,85 @@
+/* CONTAINER */
+.categories-container {
+  padding: 40px 60px;
+  background: #f8f9fb;
+  min-height: 100vh;
+}
+
+/* TITLE */
+.categories-title {
+  text-align: center;
+  font-size: 38px;
+  font-weight: 700;
+  margin-bottom: 50px;
+}
+
+/* SECTION */
+section {
+  margin-bottom: 50px;
+}
+
+.section-title {
+  font-size: 26px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* GRID */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+/* CARD */
+.category-card {
+  padding: 22px;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+
+/* GRADIENT COLORS */
+.fantasy { background: linear-gradient(135deg, #667eea, #764ba2); }
+.romance { background: linear-gradient(135deg, #ff758c, #ff7eb3); }
+.scifi { background: linear-gradient(135deg, #43cea2, #185a9d); }
+.mystery { background: linear-gradient(135deg, #232526, #414345); }
+.horror { background: linear-gradient(135deg, #000000, #434343); }
+.literary { background: linear-gradient(135deg, #8360c3, #2ebf91); }
+
+.biography { background: linear-gradient(135deg, #f7971e, #ffd200); }
+.history { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
+.selfhelp { background: linear-gradient(135deg, #56ab2f, #a8e063); }
+.science { background: linear-gradient(135deg, #00c6ff, #0072ff); }
+.cooking { background: linear-gradient(135deg, #f46b45, #eea849); }
+.business { background: linear-gradient(135deg, #283c86, #45a247); }
+
+.manga { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
+.comics { background: linear-gradient(135deg, #fc4a1a, #f7b733); }
+.young { background: linear-gradient(135deg, #1d976c, #93f9b9); }
+.children { background: linear-gradient(135deg, #fbc531, #e1b12c); }
+.arts { background: linear-gradient(135deg, #fc00ff, #00dbde); }
+.tech { background: linear-gradient(135deg, #232526, #0f2027); }
+.travel { background: linear-gradient(135deg, #2193b0, #6dd5ed); }
+.philosophy { background: linear-gradient(135deg, #614385, #516395); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .categories-container {
+    padding: 25px;
+  }
+
+  .categories-title {
+    font-size: 30px;
+  }
+}

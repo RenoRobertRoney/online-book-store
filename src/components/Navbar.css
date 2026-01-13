@@ -1,0 +1,100 @@
+/* =========================
+   NAVBAR
+========================= */
+.navbar {
+  background: linear-gradient(135deg, #1f4037, #16312b);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+.nav-left,
+.nav-center,
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+/* =========================
+   LOGO
+========================= */
+.logo {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 20px;
+  color: #facc15 !important;
+}
+
+/* =========================
+   LINKS
+========================= */
+.navbar a {
+  color: white;
+  text-decoration: none;
+  margin-right: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+  color: #facc15;
+}
+
+/* =========================
+   SORT DROPDOWN
+========================= */
+.sort-dropdown {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* =========================
+   LOGOUT BUTTON
+========================= */
+.logout-btn {
+  background: #e53935;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.logout-btn:hover {
+  background: #c62828;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+  .navbar {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nav-left,
+  .nav-center,
+  .nav-right {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .navbar a {
+    margin-bottom: 6px;
+  }
+}
