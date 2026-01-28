@@ -10,46 +10,86 @@ function Categories() {
 
   return (
     <div className="categories-container">
-      <h1 className="categories-title">📚 Shop by Category</h1>
+      <h1 className="categories-title">📚 Browse by Category</h1>
 
-      {/* FICTION */}
-      <section>
+      {/* ===== FICTION ===== */}
+      <section className="category-section">
         <h2 className="section-title">Fiction</h2>
         <div className="category-grid">
-          <div className="category-card fantasy" onClick={() => goToCategory("Fantasy")}>🧙 Fantasy</div>
-          <div className="category-card romance" onClick={() => goToCategory("Romance")}>❤️ Romance</div>
-          <div className="category-card scifi" onClick={() => goToCategory("Sci-Fi")}>🚀 Sci-Fi</div>
-          <div className="category-card mystery" onClick={() => goToCategory("Mystery")}>🕵️ Mystery</div>
-          <div className="category-card horror" onClick={() => goToCategory("Horror")}>👻 Horror</div>
-          <div className="category-card literary" onClick={() => goToCategory("Literary")}>📖 Literary</div>
+          <div className="category-card fantasy" onClick={() => goToCategory("Fantasy")}>
+            <span>🧙</span> Fantasy
+          </div>
+          <div className="category-card romance" onClick={() => goToCategory("Romance")}>
+            <span>❤️</span> Romance
+          </div>
+          <div className="category-card scifi" onClick={() => goToCategory("Sci-Fi")}>
+            <span>🚀</span> Sci-Fi
+          </div>
+          <div className="category-card mystery" onClick={() => goToCategory("Mystery")}>
+            <span>🕵️</span> Mystery
+          </div>
+          <div className="category-card horror" onClick={() => goToCategory("Horror")}>
+            <span>👻</span> Horror
+          </div>
+          <div className="category-card literary" onClick={() => goToCategory("Literary")}>
+            <span>📖</span> Literary
+          </div>
         </div>
       </section>
 
-      {/* NON-FICTION */}
-      <section>
+      {/* ===== NON-FICTION ===== */}
+      <section className="category-section">
         <h2 className="section-title">Non-Fiction</h2>
         <div className="category-grid">
-          <div className="category-card biography" onClick={() => goToCategory("Biography")}>👤 Biography</div>
-          <div className="category-card history" onClick={() => goToCategory("History")}>🏺 History</div>
-          <div className="category-card selfhelp" onClick={() => goToCategory("Self-Help")}>💡 Self-Help</div>
-          <div className="category-card science" onClick={() => goToCategory("Science")}>🔬 Science</div>
-          <div className="category-card cooking" onClick={() => goToCategory("Cooking")}>🍳 Cooking</div>
-          <div className="category-card business" onClick={() => goToCategory("Business")}>💼 Business</div>
+          <div className="category-card biography" onClick={() => goToCategory("Biography")}>
+            <span>👤</span> Biography
+          </div>
+          <div className="category-card history" onClick={() => goToCategory("History")}>
+            <span>🏺</span> History
+          </div>
+          <div className="category-card selfhelp" onClick={() => goToCategory("Self-Help")}>
+            <span>💡</span> Self-Help
+          </div>
+          <div className="category-card science" onClick={() => goToCategory("Science")}>
+            <span>🔬</span> Science
+          </div>
+          <div className="category-card cooking" onClick={() => goToCategory("Cooking")}>
+            <span>🍳</span> Cooking
+          </div>
+          <div className="category-card business" onClick={() => goToCategory("Business")}>
+            <span>💼</span> Business
+          </div>
         </div>
       </section>
 
-      {/* SPECIAL */}
-      <section>
-        <h2 className="section-title">Special Categories</h2>
+      {/* ===== SPECIAL ===== */}
+      <section className="category-section">
+        <h2 className="section-title">Special</h2>
         <div className="category-grid">
-          <div className="category-card manga" onClick={() => goToCategory("Manga")}>🎌 Manga</div>
-          <div className="category-card comics" onClick={() => goToCategory("Comics")}>🦸 Comics</div>
-          <div className="category-card young" onClick={() => goToCategory("Young Adult")}>🧑 Young Adult</div>
-          <div className="category-card children" onClick={() => goToCategory("Children")}>🧸 Children</div>
-          <div className="category-card arts" onClick={() => goToCategory("Arts")}>🎨 Arts</div>
-          <div className="category-card tech" onClick={() => goToCategory("Technology")}>💻 Technology</div>
-          <div className="category-card travel" onClick={() => goToCategory("Travel")}>✈️ Travel</div>
-          <div className="category-card philosophy" onClick={() => goToCategory("Philosophy")}>🧠 Philosophy</div>
+          <div className="category-card manga" onClick={() => goToCategory("Manga")}>
+            <span>🎌</span> Manga
+          </div>
+          <div className="category-card comics" onClick={() => goToCategory("Comics")}>
+            <span>🦸</span> Comics
+          </div>
+          <div className="category-card young" onClick={() => goToCategory("Young Adult")}>
+            <span>🧑</span> Young Adult
+          </div>
+          <div className="category-card children" onClick={() => goToCategory("Children")}>
+            <span>🧸</span> Children
+          </div>
+          <div className="category-card arts" onClick={() => goToCategory("Arts")}>
+            <span>🎨</span> Arts
+          </div>
+          <div className="category-card tech" onClick={() => goToCategory("Technology")}>
+            <span>💻</span> Technology
+          </div>
+          <div className="category-card travel" onClick={() => goToCategory("Travel")}>
+            <span>✈️</span> Travel
+          </div>
+          <div className="category-card philosophy" onClick={() => goToCategory("Philosophy")}>
+            <span>🧠</span> Philosophy
+          </div>
         </div>
       </section>
     </div>

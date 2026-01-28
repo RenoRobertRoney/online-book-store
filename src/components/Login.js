@@ -10,22 +10,31 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // ✅ ADMIN LOGIN
+    /* ================= ADMIN LOGIN ================= */
     if (email === "admin@gmail.com" && password === "admin123") {
       localStorage.setItem("role", "admin");
+      localStorage.setItem("isLoggedIn", "true");
       alert("Admin Login Successful");
       navigate("/admin-dashboard");
       return;
     }
 
-    // ✅ NORMAL USER LOGIN (Dummy logic)
-    if (email && password) {
+    /* ================= USER LOGIN ================= */
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (
+      savedUser &&
+      savedUser.email === email &&
+      savedUser.password === password
+    ) {
       localStorage.setItem("role", "user");
+      localStorage.setItem("isLoggedIn", "true");
       alert("User Login Successful");
       navigate("/");
       return;
     }
 
+    /* ================= INVALID ================= */
     alert("Invalid Email or Password");
   };
 

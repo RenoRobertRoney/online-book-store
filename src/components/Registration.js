@@ -23,8 +23,11 @@ function Registration() {
     }
 
     localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("role", "user");
+    localStorage.setItem("isLoggedIn", "true");
+
     alert("Registration Successful!");
-    navigate("/login");
+    navigate("/");
   };
 
   return (

@@ -14,6 +14,7 @@ import Login from "./components/Login";
 import Registration from "./components/Registration";
 import AdminDashboard from "./components/AdminDashboard";
 import Wishlist from "./components/Wishlist";   // ✅ ADD THIS
+import Settings from "./components/Settings/Settings";
 
 import "./App.css";
 
@@ -36,6 +37,7 @@ function App() {
         <Route path="/payment" element={<Payment />} />
         <Route path="/order-confirmation" element={<OrderConfirmation />} />
         <Route path="/track-order" element={<TrackOrder />} />
+        <Route path="/settings" element={<Settings />} />
 
         {/* ===== ADMIN ROUTE ===== */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />

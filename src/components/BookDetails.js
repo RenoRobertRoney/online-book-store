@@ -25,7 +25,19 @@ function BookDetails() {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Book added to cart");
+    alert("Book added to cart 🛒");
+  };
+
+  /* =========================
+     ADD TO WISHLIST
+  ========================= */
+  const addToWishlist = () => {
+    const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    if (!wishlist.find((b) => b.id === book.id)) {
+      wishlist.push(book);
+      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+      alert("Added to wishlist ❤️");
+    }
   };
 
   /* =========================
@@ -38,9 +50,9 @@ function BookDetails() {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.page}>
       <div style={styles.card}>
-        {/* BOOK IMAGE */}
+        {/* ===== IMAGE ===== */}
         <img
           src={book.image}
           alt={book.title}
@@ -48,15 +60,14 @@ function BookDetails() {
           onError={(e) => (e.target.src = "/no-cover.png")}
         />
 
-        {/* BOOK DETAILS */}
+        {/* ===== DETAILS ===== */}
         <div style={styles.details}>
           <h1 style={styles.title}>{book.title}</h1>
-          <h3 style={styles.author}>by {book.author}</h3>
+          <p style={styles.author}>by {book.author}</p>
 
-          {/* RATING */}
           <div style={styles.rating}>
             <span style={styles.stars}>{renderStars(book.rating)}</span>
-            <span style={styles.ratingValue}>({book.rating})</span>
+            <span style={styles.ratingValue}>{book.rating}/5</span>
           </div>
 
           <p style={styles.category}>
@@ -67,15 +78,27 @@ function BookDetails() {
 
           <p style={styles.summary}>{book.summary}</p>
 
-          {/* ACTION BUTTONS */}
           <div style={styles.buttons}>
             <button style={styles.cartBtn} onClick={addToCart}>
-              Add to Cart
+              🛒 Add to Cart
             </button>
 
             <button style={styles.backBtn} onClick={() => navigate(-1)}>
-              Back
+              ← Back
             </button>
+          </div>
+        </div>
+
+        {/* ===== RIGHT ACTION COLUMN ===== */}
+        <div style={styles.sideBox}>
+          <button style={styles.wishlistBtn} onClick={addToWishlist}>
+            ❤️ Add to Wishlist
+          </button>
+
+          <div style={styles.infoBox}>
+            <p><b>Delivery:</b> 3–5 Days</p>
+            <p><b>Availability:</b> In Stock</p>
+            <p><b>Returns:</b> 7 Days</p>
           </div>
         </div>
       </div>
@@ -84,89 +107,137 @@ function BookDetails() {
 }
 
 /* =========================
-   INLINE STYLES
+   STYLES
 ========================= */
 const styles = {
-  container: {
-    maxWidth: "1100px",
-    margin: "50px auto",
-    padding: "20px"
+  page: {
+    background: "#f4f6f9",
+    minHeight: "100vh",
+    padding: "40px 20px"
   },
+
   card: {
-    display: "flex",
-    gap: "40px",
+    maxWidth: "1150px",
+    margin: "auto",
     background: "#ffffff",
-    padding: "35px",
-    borderRadius: "14px",
-    boxShadow: "0 12px 30px rgba(0,0,0,0.12)"
+    padding: "30px",
+    borderRadius: "16px",
+    boxShadow: "0 15px 40px rgba(0,0,0,0.12)",
+    display: "flex",
+    gap: "35px",
+    alignItems: "flex-start"
   },
+
   image: {
-    width: "280px",
-    height: "420px",
+    width: "260px",
+    height: "400px",
     objectFit: "cover",
-    borderRadius: "12px"
+    borderRadius: "14px"
   },
+
   details: {
     flex: 1
   },
+
   title: {
-    fontSize: "32px",
-    marginBottom: "8px"
+    fontSize: "30px",
+    marginBottom: "6px",
+    color: "#111827"
   },
+
   author: {
-    color: "#555",
-    marginBottom: "10px"
+    fontSize: "16px",
+    color: "#6b7280",
+    marginBottom: "12px"
   },
+
   rating: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
+    gap: "10px",
     marginBottom: "12px"
   },
+
   stars: {
     color: "#facc15",
-    fontSize: "20px"
+    fontSize: "22px"
   },
+
   ratingValue: {
     fontSize: "14px",
-    color: "#555"
+    color: "#4b5563"
   },
+
   category: {
-    color: "#374151",
-    marginBottom: "10px"
+    fontSize: "15px",
+    marginBottom: "12px",
+    color: "#374151"
   },
+
   price: {
     fontSize: "28px",
-    fontWeight: "bold",
+    fontWeight: "700",
     color: "#111827",
     margin: "18px 0"
   },
+
   summary: {
     fontSize: "16px",
     lineHeight: "1.7",
-    color: "#333",
+    color: "#374151",
     marginBottom: "25px"
   },
+
   buttons: {
     display: "flex",
     gap: "15px"
   },
+
   cartBtn: {
     background: "#111827",
-    color: "white",
+    color: "#fff",
     border: "none",
-    padding: "14px 24px",
+    padding: "14px 26px",
     fontSize: "16px",
-    borderRadius: "8px",
+    borderRadius: "10px",
     cursor: "pointer"
   },
+
   backBtn: {
     background: "#e5e7eb",
     border: "none",
-    padding: "14px 24px",
+    padding: "14px 26px",
     fontSize: "16px",
-    borderRadius: "8px",
+    borderRadius: "10px",
     cursor: "pointer"
+  },
+
+  /* ===== RIGHT COLUMN ===== */
+  sideBox: {
+    width: "220px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px"
+  },
+
+  wishlistBtn: {
+    background: "#ffe4e6",
+    color: "#e11d48",
+    border: "none",
+    padding: "14px",
+    borderRadius: "12px",
+    fontSize: "16px",
+    cursor: "pointer",
+    fontWeight: "600"
+  },
+
+  infoBox: {
+    background: "#f9fafb",
+    padding: "15px",
+    borderRadius: "12px",
+    fontSize: "14px",
+    color: "#374151",
+    lineHeight: "1.6"
   }
 };
 

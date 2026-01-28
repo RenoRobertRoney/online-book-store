@@ -1,8 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Payment() {
   const navigate = useNavigate();
+
+  /* =========================
+     🔐 LOGIN CHECK
+  ========================= */
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    if (!isLoggedIn) {
+      alert("Please login to continue payment");
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -34,17 +45,17 @@ function Payment() {
     }
 
     if (paymentMethod === "card" && cardNumber.length < 12) {
-      alert("Please enter a valid card number");
+      alert("Enter a valid card number");
       return;
     }
 
     if (paymentMethod === "upi" && !upiId.includes("@")) {
-      alert("Please enter a valid UPI ID");
+      alert("Enter a valid UPI ID");
       return;
     }
 
     if (paymentMethod === "bank" && bankRef.length < 5) {
-      alert("Please enter bank transfer reference");
+      alert("Enter bank reference number");
       return;
     }
 
@@ -62,7 +73,6 @@ function Payment() {
       items: cart,
       total,
       paymentMethod,
-
       status: "Order Packed",
       trackingSteps: [
         { step: "Order Packed", completed: true },
@@ -86,18 +96,12 @@ function Payment() {
       <h1>Payment</h1>
       <p>Select a payment method</p>
 
-      {/* =========================
-         ORDER SUMMARY
-      ========================= */}
       <div style={styles.summary}>
         <h3>Order Summary</h3>
         <p>Total Items: {cart.length}</p>
         <p><strong>Total Amount: ₹{total}</strong></p>
       </div>
 
-      {/* =========================
-         PAYMENT METHODS
-      ========================= */}
       <div style={styles.paymentBox}>
         <label>
           <input
@@ -122,7 +126,7 @@ function Payment() {
         {paymentMethod === "card" && (
           <input
             type="text"
-            placeholder="Enter Card Number"
+            placeholder="Card Number"
             value={cardNumber}
             onChange={(e) => setCardNumber(e.target.value)}
             style={styles.input}
@@ -136,7 +140,7 @@ function Payment() {
             value="upi"
             onChange={(e) => setPaymentMethod(e.target.value)}
           />
-          UPI (GPay / PhonePe / Paytm)
+          UPI
         </label>
 
         {paymentMethod === "upi" && (
@@ -162,7 +166,7 @@ function Payment() {
         {paymentMethod === "bank" && (
           <input
             type="text"
-            placeholder="Bank Reference Number"
+            placeholder="Reference Number"
             value={bankRef}
             onChange={(e) => setBankRef(e.target.value)}
             style={styles.input}
@@ -177,17 +181,13 @@ function Payment() {
   );
 }
 
-/* =========================
-   STYLES
-========================= */
 const styles = {
   container: {
     maxWidth: "520px",
     margin: "50px auto",
     padding: "25px",
-    background: "#ffffff",
-    borderRadius: "12px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.1)"
+    background: "#fff",
+    borderRadius: "12px"
   },
   summary: {
     background: "#f3f4f6",
@@ -204,17 +204,15 @@ const styles = {
   input: {
     padding: "10px",
     borderRadius: "6px",
-    border: "1px solid #d1d5db"
+    border: "1px solid #ccc"
   },
   payBtn: {
     width: "100%",
     padding: "14px",
-    fontSize: "16px",
     background: "#16a34a",
     color: "white",
     border: "none",
-    borderRadius: "8px",
-    cursor: "pointer"
+    borderRadius: "8px"
   }
 };
 

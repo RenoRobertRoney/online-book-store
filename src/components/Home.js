@@ -38,7 +38,16 @@ function Home() {
     navigate(`/?sort=${e.target.value}`);
   };
 
+  /* ================= 🔐 WISHLIST PROTECTION ================= */
   const addToWishlist = (book) => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+    if (!isLoggedIn) {
+      alert("Please login to add books to wishlist");
+      navigate("/login");
+      return;
+    }
+
     const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
     if (!wishlist.find((b) => b.id === book.id)) {
       wishlist.push(book);
@@ -91,7 +100,6 @@ function Home() {
               <h3>{book.title}</h3>
               <p className="author">{book.author}</p>
 
-              {/* ⭐ Rating */}
               <p className="rating">
                 {"★".repeat(Math.round(book.rating))}
                 {"☆".repeat(5 - Math.round(book.rating))}
@@ -100,7 +108,6 @@ function Home() {
 
               <p className="price">₹{book.price}</p>
 
-              {/* ✅ PROFESSIONAL ACTION ROW */}
               <div className="card-actions">
                 <button
                   className="details-btn"

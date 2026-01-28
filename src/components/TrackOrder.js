@@ -5,7 +5,7 @@ function TrackOrder() {
 
   useEffect(() => {
     const savedOrders = JSON.parse(localStorage.getItem("orders")) || [];
-    setOrders(savedOrders.reverse()); // latest order first
+    setOrders(savedOrders.reverse());
   }, []);
 
   const getProgressPercent = (steps) => {
@@ -31,22 +31,15 @@ function TrackOrder() {
               <span style={styles.status}>{order.status}</span>
             </div>
 
-            {/* DELIVERY INFO */}
-            <div style={styles.deliveryInfo}>
-              <p>
-                <b>Estimated Delivery:</b>{" "}
-                <span style={{ color: "#2e7d32" }}>
-                  {order.estimatedDelivery}
-                </span>
-              </p>
-            </div>
+            {/* DELIVERY */}
+            <p><b>Estimated Delivery:</b> {order.estimatedDelivery}</p>
 
-            {/* PROGRESS BAR */}
+            {/* PROGRESS */}
             <div style={styles.progressContainer}>
               <div
                 style={{
                   ...styles.progressBar,
-                  width: `${getProgressPercent(order.trackingSteps)}%`,
+                  width: `${getProgressPercent(order.trackingSteps)}%`
                 }}
               />
             </div>
@@ -58,34 +51,25 @@ function TrackOrder() {
                   <div
                     style={{
                       ...styles.circle,
-                      background: step.completed ? "#4caf50" : "#ccc",
+                      background: step.completed ? "#4caf50" : "#ccc"
                     }}
                   >
                     {step.completed ? "✓" : ""}
                   </div>
-                  <p
-                    style={{
-                      fontWeight: step.completed ? "600" : "400",
-                      color: step.completed ? "#000" : "#777",
-                    }}
-                  >
-                    {step.step}
-                  </p>
+                  <p>{step.step}</p>
                 </div>
               ))}
             </div>
 
             {/* ITEMS */}
-            <div style={styles.items}>
-              <h4>📚 Books Ordered</h4>
-              <ul>
-                {order.items.map((item, idx) => (
-                  <li key={idx}>
-                    {item.title} × {item.qty}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <h4>📚 Books Ordered</h4>
+            <ul>
+              {order.items.map((item, idx) => (
+                <li key={idx}>
+                  {item.title} × {item.quantity}
+                </li>
+              ))}
+            </ul>
 
             {/* TOTAL */}
             <div style={styles.total}>
@@ -106,60 +90,54 @@ const styles = {
   page: {
     padding: "40px",
     background: "#f4f6f9",
-    minHeight: "100vh",
+    minHeight: "100vh"
   },
   heading: {
     textAlign: "center",
-    marginBottom: "30px",
+    marginBottom: "30px"
   },
   empty: {
     textAlign: "center",
-    color: "#777",
+    color: "#777"
   },
   card: {
     background: "#fff",
     borderRadius: "12px",
     padding: "25px",
     marginBottom: "30px",
-    boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.08)"
   },
   cardHeader: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
     borderBottom: "1px solid #eee",
-    paddingBottom: "15px",
+    paddingBottom: "15px"
   },
   status: {
     background: "#e3f2fd",
     color: "#1565c0",
     padding: "6px 12px",
     borderRadius: "20px",
-    fontSize: "14px",
-  },
-  deliveryInfo: {
-    marginTop: "15px",
+    fontSize: "14px"
   },
   progressContainer: {
     height: "8px",
     background: "#ddd",
     borderRadius: "5px",
-    overflow: "hidden",
-    marginTop: "15px",
+    margin: "15px 0"
   },
   progressBar: {
     height: "100%",
-    background: "linear-gradient(90deg,#4caf50,#81c784)",
-    transition: "width 0.5s",
+    background: "linear-gradient(90deg,#4caf50,#81c784)"
   },
   timeline: {
     display: "flex",
     justifyContent: "space-between",
-    marginTop: "25px",
+    marginTop: "20px"
   },
   step: {
     textAlign: "center",
-    flex: 1,
+    flex: 1
   },
   circle: {
     width: "32px",
@@ -169,18 +147,15 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    margin: "0 auto 8px",
-  },
-  items: {
-    marginTop: "25px",
+    margin: "0 auto 8px"
   },
   total: {
     display: "flex",
     justifyContent: "space-between",
     fontWeight: "600",
     marginTop: "20px",
-    fontSize: "18px",
-  },
+    fontSize: "18px"
+  }
 };
 
 export default TrackOrder;

@@ -1,55 +1,64 @@
-/* CONTAINER */
+/* ================= CONTAINER ================= */
 .categories-container {
-  padding: 40px 60px;
+  padding: 50px 60px;
   background: #f8f9fb;
   min-height: 100vh;
 }
 
-/* TITLE */
+/* ================= TITLE ================= */
 .categories-title {
   text-align: center;
-  font-size: 38px;
+  font-size: 40px;
   font-weight: 700;
-  margin-bottom: 50px;
+  margin-bottom: 60px;
+  color: #111827;
 }
 
-/* SECTION */
-section {
-  margin-bottom: 50px;
+/* ================= SECTION ================= */
+.category-section {
+  margin-bottom: 55px;
 }
 
 .section-title {
   font-size: 26px;
-  margin-bottom: 20px;
-  color: #333;
+  margin-bottom: 22px;
+  color: #1f2937;
 }
 
-/* GRID */
+/* ================= GRID ================= */
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 22px;
 }
 
-/* CARD */
+/* ================= CARD ================= */
 .category-card {
-  padding: 22px;
-  border-radius: 14px;
+  padding: 24px;
+  border-radius: 16px;
   color: #fff;
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.category-card span {
+  font-size: 22px;
 }
 
 .category-card:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.25);
 }
 
-/* GRADIENT COLORS */
+/* ================= GRADIENTS ================= */
 .fantasy { background: linear-gradient(135deg, #667eea, #764ba2); }
 .romance { background: linear-gradient(135deg, #ff758c, #ff7eb3); }
 .scifi { background: linear-gradient(135deg, #43cea2, #185a9d); }
@@ -73,13 +82,17 @@ section {
 .travel { background: linear-gradient(135deg, #2193b0, #6dd5ed); }
 .philosophy { background: linear-gradient(135deg, #614385, #516395); }
 
-/* RESPONSIVE */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
   .categories-container {
-    padding: 25px;
+    padding: 30px 20px;
   }
 
   .categories-title {
     font-size: 30px;
+  }
+
+  .section-title {
+    font-size: 22px;
   }
 }

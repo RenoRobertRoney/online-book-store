@@ -19,6 +19,7 @@ function Navbar() {
         <Link to="/wishlist">❤️ Wishlist</Link>
         <Link to="/cart">🛒 Cart</Link>
         <Link to="/track-order">🚚 Track Order</Link>
+        <Link to="/settings">Settings</Link>
       </div>
 
       <div className="nav-right">
