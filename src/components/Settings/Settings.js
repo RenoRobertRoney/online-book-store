@@ -320,7 +320,7 @@ function Settings() {
             <>
               <h2>Contact Support</h2>
               <p>📧 support@bookstore.com</p>
-              <p>📞 +91 9876543210</p>
+              <p>📞 +91 9997770001</p>
             </>
           )}
         </div>
