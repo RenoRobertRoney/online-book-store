@@ -1,36 +1,73 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Cart() {
   const navigate = useNavigate();
   const [cart, setCart] = useState([]);
+  const [user, setUser] = useState(null);
 
-  // Load cart safely
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const safeCart = storedCart.map((item) => ({
-      ...item,
-      price: Number(item.price),
-      quantity: Number(item.quantity) || 1
-    }));
-    setCart(safeCart);
-  }, []);
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUser(storedUser);
+      fetchCart(storedUser.userId);
+    } else {
+      navigate("/login");
+    }
+  }, [navigate]);
 
-  const saveCart = (updatedCart) => {
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  const fetchCart = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`http://localhost:5000/api/cart/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Backend returns { userId, items: [...] } or just the cart object
+      setCart(res.data.items || []);
+    } catch (err) {
+      console.error("Error fetching cart", err);
+    }
   };
 
-  const updateQuantity = (id, qty) => {
+  const updateQuantity = async (id, qty) => {
     if (qty < 1) return;
-    const updated = cart.map((item) =>
-      item.id === id ? { ...item, quantity: qty } : item
-    );
-    saveCart(updated);
+    if (!id) {
+      console.error("Cannot update: Missing ID");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.put("http://localhost:5000/api/cart/update", {
+        userId: user.userId,
+        bookId: id,
+        quantity: qty
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setCart(res.data.items || []);
+    } catch (err) {
+      console.error("Error updating cart", err);
+    }
   };
 
-  const removeItem = (id) => {
-    saveCart(cart.filter((item) => item.id !== id));
+  const removeItem = async (id) => {
+    if (!id) {
+      console.error("Cannot remove: Missing ID");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post("http://localhost:5000/api/cart/remove", {
+        userId: user.userId,
+        bookId: id
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setCart(res.data.items || []);
+    } catch (err) {
+      console.error("Error removing item", err);
+    }
   };
 
   const total = cart.reduce(
@@ -51,24 +88,46 @@ function Cart() {
       <h1>Shopping Cart</h1>
 
       {cart.map((item) => (
-        <div key={item.id} style={styles.card}>
-          <img src={item.image} alt={item.title} style={styles.image} />
+        <div key={item.bookId || item._id} style={styles.card}>
+          {/* Note: item.bookId is used as key because backend schema uses bookId */}
+          {/* Since backend saves simplified item, we might not have 'image' unless added to schema. 
+              Checking Schema: Cart.js schema only has bookId, title, price, quantity. 
+              WAIT. The schema in Cart.js DOES NOT HAVE IMAGE. 
+              Frontend Home.js adds item: { ...book, quantity: 1 }. 
+              Mongoose schema 'strict: false' or strict mode?
+              The Schema I saw earlier:
+                bookId: { type: String, required: true },
+                title: { type: String, required: true },
+                price: { type: Number, required: true },
+                quantity: ...
+              It DOES NOT have image.
+              I should probably update the schema to include image if I want to display it.
+              For now, I'll use a placeholder or check if the backend saved extra fields.
+              Actually, Mongoose defaults to strict: true, so 'image' would be stripped.
+              I will add 'image' to the Cart Schema in a separate step or just handle missing image.
+           */}
+          <img
+            src={item.image || "https://placehold.co/100x150?text=No+Image"}
+            alt={item.title}
+            style={styles.image}
+          />
 
           <div style={{ flex: 1 }}>
             <h3>{item.title}</h3>
-            <p>{item.author}</p>
+            {/* Author is also missing from schema. Added check. */}
+            <p>{item.author || "Unknown Author"}</p>
             <p>₹{item.price}</p>
 
             <div style={styles.qty}>
-              <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+              <button onClick={() => updateQuantity(item.bookId || item._id, item.quantity - 1)}>-</button>
               <span>{item.quantity}</span>
-              <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+              <button onClick={() => updateQuantity(item.bookId || item._id, item.quantity + 1)}>+</button>
             </div>
           </div>
 
           <div style={{ textAlign: "right" }}>
             <p><b>₹{item.price * item.quantity}</b></p>
-            <button style={styles.remove} onClick={() => removeItem(item.id)}>
+            <button style={styles.remove} onClick={() => removeItem(item.bookId || item._id)}>
               Remove
             </button>
           </div>

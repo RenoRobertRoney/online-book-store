@@ -13,8 +13,10 @@ import TrackOrder from "./components/TrackOrder";
 import Login from "./components/Login";
 import Registration from "./components/Registration";
 import AdminDashboard from "./components/AdminDashboard";
-import Wishlist from "./components/Wishlist";   // ✅ ADD THIS
+import Wishlist from "./components/Wishlist";
 import Settings from "./components/Settings/Settings";
+import AddAddress from "./components/AddAddress";
+import Footer from "./components/Footer";
 
 import "./App.css";
 
@@ -32,16 +34,18 @@ function App() {
         <Route path="/books/:category" element={<BookList />} />
         <Route path="/book/:id" element={<BookDetails />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/wishlist" element={<Wishlist />} /> {/* ✅ FIX */}
+        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/order-confirmation" element={<OrderConfirmation />} />
         <Route path="/track-order" element={<TrackOrder />} />
+        <Route path="/add-address" element={<AddAddress />} />
         <Route path="/settings" element={<Settings />} />
 
         {/* ===== ADMIN ROUTE ===== */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

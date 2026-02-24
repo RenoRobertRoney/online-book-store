@@ -1,41 +1,47 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Auth.css";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    /* ================= ADMIN LOGIN ================= */
-    if (email === "admin@gmail.com" && password === "admin123") {
-      localStorage.setItem("role", "admin");
-      localStorage.setItem("isLoggedIn", "true");
-      alert("Admin Login Successful");
-      navigate("/admin-dashboard");
-      return;
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password,
+      });
+
+      if (response.data) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("role", response.data.role);
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("user", JSON.stringify(response.data)); // Save full response including userId
+        alert(response.data.message);
+
+        if (response.data.role === "admin") {
+          navigate("/admin-dashboard");
+        } else {
+          navigate("/");
+        }
+      }
+    } catch (error) {
+      console.error("Login Error:", error);
+      if (error.response && error.response.data) {
+        alert(error.response.data.message);
+      } else {
+        alert("Login failed. Please check your connection.");
+      }
+    } finally {
+      setLoading(false);
     }
-
-    /* ================= USER LOGIN ================= */
-    const savedUser = JSON.parse(localStorage.getItem("user"));
-
-    if (
-      savedUser &&
-      savedUser.email === email &&
-      savedUser.password === password
-    ) {
-      localStorage.setItem("role", "user");
-      localStorage.setItem("isLoggedIn", "true");
-      alert("User Login Successful");
-      navigate("/");
-      return;
-    }
-
-    /* ================= INVALID ================= */
-    alert("Invalid Email or Password");
   };
 
   return (
@@ -59,7 +65,9 @@ function Login() {
           required
         />
 
-        <button type="submit">Login</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
 
         <p>
           Don’t have an account?{" "}

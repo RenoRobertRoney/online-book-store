@@ -1,19 +1,51 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState([]);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("wishlist")) || [];
-    setWishlist(data);
-  }, []);
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUser(storedUser);
+      fetchWishlist(storedUser.userId);
+    } else {
+      navigate("/login");
+    }
+  }, [navigate]);
 
-  const removeFromWishlist = (id) => {
-    const updated = wishlist.filter((book) => book.id !== id);
-    setWishlist(updated);
-    localStorage.setItem("wishlist", JSON.stringify(updated));
+  const fetchWishlist = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`http://localhost:5000/api/wishlist/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setWishlist(res.data.items || []);
+    } catch (err) {
+      console.error("Error fetching wishlist", err);
+    }
+  };
+
+  const removeFromWishlist = async (id) => {
+    if (!id) {
+      console.error("Cannot remove: Missing ID");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post("http://localhost:5000/api/wishlist/remove", {
+        userId: user.userId,
+        bookId: id
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setWishlist(res.data.items || []);
+    } catch (err) {
+      console.error("Error removing from wishlist", err);
+    }
   };
 
   if (wishlist.length === 0) {
@@ -26,7 +58,7 @@ function Wishlist() {
 
       <div style={styles.grid}>
         {wishlist.map((book) => (
-          <div key={book.id} style={styles.card}>
+          <div key={book._id} style={styles.card}>
             <img src={book.image} alt={book.title} style={styles.image} />
 
             <h3>{book.title}</h3>
@@ -34,12 +66,12 @@ function Wishlist() {
             <p><b>₹{book.price}</b></p>
 
             <div style={styles.actions}>
-              <button onClick={() => navigate(`/book/${book.id}`)}>
+              <button onClick={() => navigate(`/book/${book._id}`)}>
                 View
               </button>
               <button
                 style={styles.removeBtn}
-                onClick={() => removeFromWishlist(book.id)}
+                onClick={() => removeFromWishlist(book._id)}
               >
                 Remove
               </button>

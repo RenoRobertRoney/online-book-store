@@ -1,42 +1,99 @@
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import books from "../data/books";
+import axios from "axios";
+import "./BookDetails.css";
 
 function BookDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [book, setBook] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const book = books.find((b) => b.id === Number(id));
+  useEffect(() => {
+    // Determine the API URL based on environment or default to localhost
+    const API_URL = "http://localhost:5000/api";
+
+    axios.get(`${API_URL}/books/${id}`)
+      .then(response => {
+        setBook(response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error("Error fetching book details:", error);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) return <div className="loading-container">Loading book details...</div>;
 
   if (!book) {
-    return <h2 style={{ padding: "40px" }}>Book not found</h2>;
+    return <div className="error-container">Book not found</div>;
   }
+
 
   /* =========================
      ADD TO CART
   ========================= */
-  const addToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existing = cart.find((item) => item.id === book.id);
+  const addToCart = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
 
-    if (existing) {
-      existing.quantity += 1;
-    } else {
-      cart.push({ ...book, quantity: 1 });
+    if (!user || !token) {
+      alert("Please login to add to cart");
+      navigate("/login");
+      return;
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Book added to cart 🛒");
+    try {
+      await axios.post(
+        "http://localhost:5000/api/cart",
+        {
+          userId: user.userId,
+          item: { ...book, quantity: 1 }
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      alert("Book added to cart 🛒");
+    } catch (err) {
+      console.error("Error adding to cart", err);
+      alert("Failed to add to cart");
+    }
   };
+
 
   /* =========================
      ADD TO WISHLIST
   ========================= */
-  const addToWishlist = () => {
-    const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-    if (!wishlist.find((b) => b.id === book.id)) {
-      wishlist.push(book);
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  const addToWishlist = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!user || !token) {
+      alert("Please login to add to wishlist");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await axios.post(
+        "http://localhost:5000/api/wishlist",
+        {
+          userId: user.userId,
+          item: book
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
       alert("Added to wishlist ❤️");
+    } catch (err) {
+      console.error("Error adding to wishlist", err);
+      // alert("Failed to add to wishlist"); // Optional: fail silently or show error
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message);
+      }
     }
   };
 
@@ -50,195 +107,51 @@ function BookDetails() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        {/* ===== IMAGE ===== */}
-        <img
-          src={book.image}
-          alt={book.title}
-          style={styles.image}
-          onError={(e) => (e.target.src = "/no-cover.png")}
-        />
+    <div className="book-details-page">
+      <div className="book-details-container">
 
-        {/* ===== DETAILS ===== */}
-        <div style={styles.details}>
-          <h1 style={styles.title}>{book.title}</h1>
-          <p style={styles.author}>by {book.author}</p>
+        {/* LEFT: IMAGE */}
+        <div className="book-image-section">
+          <img
+            src={book.image}
+            alt={book.title}
+            onError={(e) => (e.target.src = "/no-cover.png")}
+          />
+        </div>
 
-          <div style={styles.rating}>
-            <span style={styles.stars}>{renderStars(book.rating)}</span>
-            <span style={styles.ratingValue}>{book.rating}/5</span>
+        {/* RIGHT: DETAILS */}
+        <div className="book-info-section">
+          <span className="book-category">{book.category}</span>
+          <h1 className="book-title">{book.title}</h1>
+          <p className="book-author">by {book.author}</p>
+
+          <div className="book-rating">
+            <span className="stars">{renderStars(book.rating)}</span>
+            <span className="rating-count">({book.rating} / 5)</span>
           </div>
 
-          <p style={styles.category}>
-            <b>Category:</b> {book.category}
+          <p className="book-price">₹{book.price}</p>
+
+          <p className="book-description">
+            {book.description || "No description available for this book. Dive into this amazing read and discover a new world!"}
           </p>
 
-          <p style={styles.price}>₹{book.price}</p>
-
-          <p style={styles.summary}>{book.summary}</p>
-
-          <div style={styles.buttons}>
-            <button style={styles.cartBtn} onClick={addToCart}>
+          <div className="action-buttons">
+            <button className="btn btn-primary" onClick={addToCart}>
               🛒 Add to Cart
             </button>
-
-            <button style={styles.backBtn} onClick={() => navigate(-1)}>
+            <button className="btn btn-wishlist" onClick={addToWishlist}>
+              ❤️ Wishlist
+            </button>
+            <button className="btn btn-secondary" onClick={() => navigate(-1)}>
               ← Back
             </button>
           </div>
         </div>
 
-        {/* ===== RIGHT ACTION COLUMN ===== */}
-        <div style={styles.sideBox}>
-          <button style={styles.wishlistBtn} onClick={addToWishlist}>
-            ❤️ Add to Wishlist
-          </button>
-
-          <div style={styles.infoBox}>
-            <p><b>Delivery:</b> 3–5 Days</p>
-            <p><b>Availability:</b> In Stock</p>
-            <p><b>Returns:</b> 7 Days</p>
-          </div>
-        </div>
       </div>
     </div>
   );
 }
-
-/* =========================
-   STYLES
-========================= */
-const styles = {
-  page: {
-    background: "#f4f6f9",
-    minHeight: "100vh",
-    padding: "40px 20px"
-  },
-
-  card: {
-    maxWidth: "1150px",
-    margin: "auto",
-    background: "#ffffff",
-    padding: "30px",
-    borderRadius: "16px",
-    boxShadow: "0 15px 40px rgba(0,0,0,0.12)",
-    display: "flex",
-    gap: "35px",
-    alignItems: "flex-start"
-  },
-
-  image: {
-    width: "260px",
-    height: "400px",
-    objectFit: "cover",
-    borderRadius: "14px"
-  },
-
-  details: {
-    flex: 1
-  },
-
-  title: {
-    fontSize: "30px",
-    marginBottom: "6px",
-    color: "#111827"
-  },
-
-  author: {
-    fontSize: "16px",
-    color: "#6b7280",
-    marginBottom: "12px"
-  },
-
-  rating: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    marginBottom: "12px"
-  },
-
-  stars: {
-    color: "#facc15",
-    fontSize: "22px"
-  },
-
-  ratingValue: {
-    fontSize: "14px",
-    color: "#4b5563"
-  },
-
-  category: {
-    fontSize: "15px",
-    marginBottom: "12px",
-    color: "#374151"
-  },
-
-  price: {
-    fontSize: "28px",
-    fontWeight: "700",
-    color: "#111827",
-    margin: "18px 0"
-  },
-
-  summary: {
-    fontSize: "16px",
-    lineHeight: "1.7",
-    color: "#374151",
-    marginBottom: "25px"
-  },
-
-  buttons: {
-    display: "flex",
-    gap: "15px"
-  },
-
-  cartBtn: {
-    background: "#111827",
-    color: "#fff",
-    border: "none",
-    padding: "14px 26px",
-    fontSize: "16px",
-    borderRadius: "10px",
-    cursor: "pointer"
-  },
-
-  backBtn: {
-    background: "#e5e7eb",
-    border: "none",
-    padding: "14px 26px",
-    fontSize: "16px",
-    borderRadius: "10px",
-    cursor: "pointer"
-  },
-
-  /* ===== RIGHT COLUMN ===== */
-  sideBox: {
-    width: "220px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px"
-  },
-
-  wishlistBtn: {
-    background: "#ffe4e6",
-    color: "#e11d48",
-    border: "none",
-    padding: "14px",
-    borderRadius: "12px",
-    fontSize: "16px",
-    cursor: "pointer",
-    fontWeight: "600"
-  },
-
-  infoBox: {
-    background: "#f9fafb",
-    padding: "15px",
-    borderRadius: "12px",
-    fontSize: "14px",
-    color: "#374151",
-    lineHeight: "1.6"
-  }
-};
 
 export default BookDetails;

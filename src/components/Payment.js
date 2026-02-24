@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Payment() {
   const navigate = useNavigate();
@@ -15,12 +16,31 @@ function Payment() {
     }
   }, [navigate]);
 
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  /* =========================
+     FETCH CART FROM API
+  ========================= */
+  const [cart, setCart] = useState([]);
+  const [total, setTotal] = useState(0);
 
-  const total = cart.reduce(
-    (sum, item) => sum + Number(item.price) * Number(item.quantity),
-    0
-  );
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+    if (storedUser && token) {
+      const userId = storedUser.userId || storedUser._id;
+      if (!userId) return;
+
+      axios.get(`http://localhost:5000/api/cart/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => {
+          const cartData = res.data.items || [];
+          setCart(cartData);
+          const sum = cartData.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+          setTotal(sum);
+        })
+        .catch(err => console.error("Payment cart fetch error:", err));
+    }
+  }, []);
 
   /* =========================
      PAYMENT STATE
@@ -33,7 +53,7 @@ function Payment() {
   /* =========================
      PAYMENT HANDLER
   ========================= */
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (cart.length === 0) {
       alert("Your cart is empty");
       return;
@@ -60,35 +80,54 @@ function Payment() {
     }
 
     /* =========================
-       ORDER CREATION
+       ORDER CREATION (BACKEND)
     ========================= */
-    const orderDate = new Date();
-    const deliveryDate = new Date();
-    deliveryDate.setDate(orderDate.getDate() + 5);
+    /* =========================
+       ORDER CREATION (BACKEND)
+    ========================= */
+    const selectedAddress = JSON.parse(localStorage.getItem("selectedAddress"));
+    const storedUser = JSON.parse(localStorage.getItem("user"));
 
-    const newOrder = {
-      orderId: "ORD" + Date.now(),
-      orderDate: orderDate.toLocaleString(),
-      estimatedDelivery: deliveryDate.toDateString(),
-      items: cart,
-      total,
-      paymentMethod,
-      status: "Order Packed",
-      trackingSteps: [
-        { step: "Order Packed", completed: true },
-        { step: "Shipped", completed: false },
-        { step: "Out for Delivery", completed: false },
-        { step: "Delivered", completed: false }
-      ]
-    };
+    if (!selectedAddress) {
+      alert("No delivery address selected. Please go back to checkout.");
+      navigate("/checkout");
+      return;
+    }
 
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    orders.push(newOrder);
+    if (!storedUser || !storedUser.email) {
+      alert("User session invalid. Please login again.");
+      navigate("/login");
+      return;
+    }
 
-    localStorage.setItem("orders", JSON.stringify(orders));
-    localStorage.removeItem("cart");
+    try {
+      console.log("Sending Order Payload:", {
+        email: storedUser.email,
+        items: cart,
+        total,
+        address: selectedAddress,
+        paymentMethod
+      });
 
-    navigate("/order-confirmation");
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+
+      const res = await axios.post("http://localhost:5000/api/orders", {
+        items: cart,
+        total,
+        shippingAddress: selectedAddress,
+        paymentMethod
+      }, config);
+
+      alert("Order Placed Successfully! 🎉");
+      navigate("/order-confirmation", { state: { order: res.data } });
+    } catch (err) {
+      console.error("Order failed:", err);
+      const errorMsg = err.response?.data?.error || err.message || "Unknown error";
+      alert(`Order placement failed: ${errorMsg}`);
+    }
   };
 
   return (

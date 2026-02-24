@@ -1,10 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Checkout() {
   const navigate = useNavigate();
 
-  const addresses = JSON.parse(localStorage.getItem("addresses")) || [];
+  const [addresses, setAddresses] = useState([]);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+    if (user && token) {
+      axios.get(`http://localhost:5000/api/users/address`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => setAddresses(res.data))
+        .catch(err => console.error(err));
+    }
+  }, []);
 
   const defaultAddress =
     addresses.find((addr) => addr.default) || addresses[0];
@@ -44,28 +57,38 @@ function Checkout() {
       <h2 style={styles.subHeading}>Select Delivery Address</h2>
 
       {addresses.length === 0 ? (
-        <p>No address found. Please add one in Settings.</p>
+        <div style={styles.emptyCard}>
+          <p>No addresses found. Please add a delivery address to continue.</p>
+          <button style={styles.addBtn} onClick={() => navigate("/add-address")}>
+            ➕ Add New Address
+          </button>
+        </div>
       ) : (
-        addresses.map((addr) => (
-          <label key={addr.id} style={styles.addressCard}>
-            <input
-              type="radio"
-              name="address"
-              checked={selectedAddressId === addr.id}
-              onChange={() => setSelectedAddressId(addr.id)}
-            />
+        <>
+          {addresses.map((addr) => (
+            <label key={addr.id} style={styles.addressCard}>
+              <input
+                type="radio"
+                name="address"
+                checked={selectedAddressId === addr.id}
+                onChange={() => setSelectedAddressId(addr.id)}
+              />
 
-            <div style={styles.addressText}>
-              <strong>{addr.fullName}</strong> ({addr.mobile}) <br />
-              {addr.house}, {addr.area} <br />
-              {addr.city}, {addr.state} – {addr.pincode} <br />
-              {addr.country}
-              {addr.default && (
-                <span style={styles.defaultBadge}>Default</span>
-              )}
-            </div>
-          </label>
-        ))
+              <div style={styles.addressText}>
+                <strong>{addr.fullName}</strong> ({addr.mobile}) <br />
+                {addr.house}, {addr.area} <br />
+                {addr.city}, {addr.state} – {addr.pincode} <br />
+                {addr.country}
+                {addr.default && (
+                  <span style={styles.defaultBadge}>Default</span>
+                )}
+              </div>
+            </label>
+          ))}
+          <button style={styles.addBtnSmall} onClick={() => navigate("/add-address")}>
+            + Add Another Address
+          </button>
+        </>
       )}
 
       <button style={styles.payBtn} onClick={handleContinue}>
@@ -118,6 +141,34 @@ const styles = {
     border: "none",
     borderRadius: "8px",
     cursor: "pointer"
+  },
+  addBtn: {
+    padding: "12px 20px",
+    background: "#1f4037",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    marginTop: "10px",
+    fontSize: "16px"
+  },
+  addBtnSmall: {
+    background: "none",
+    border: "none",
+    color: "#1f4037",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "bold",
+    textDecoration: "underline",
+    marginBottom: "20px"
+  },
+  emptyCard: {
+    textAlign: "center",
+    padding: "30px",
+    background: "#f9fafb",
+    border: "1px dashed #ccc",
+    borderRadius: "8px",
+    marginBottom: "20px"
   }
 };
 

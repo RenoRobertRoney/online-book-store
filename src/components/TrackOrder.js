@@ -1,16 +1,33 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 function TrackOrder() {
   const [orders, setOrders] = useState([]);
 
+  /* =========================
+     FETCH ORDERS FROM API
+  ========================= */
   useEffect(() => {
-    const savedOrders = JSON.parse(localStorage.getItem("orders")) || [];
-    setOrders(savedOrders.reverse());
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (storedUser && storedUser.userId && token) {
+      axios.get(`http://localhost:5000/api/orders/${storedUser.userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => {
+          // Sort by createdAt descending
+          const sorted = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          setOrders(sorted);
+        })
+        .catch(err => console.error("Error fetching orders:", err));
+    }
   }, []);
 
-  const getProgressPercent = (steps) => {
-    const completed = steps.filter((s) => s.completed).length;
-    return (completed / steps.length) * 100;
+  const getProgressPercent = (status) => {
+    const steps = ["Order Packed", "Shipped", "Out for Delivery", "Delivered"];
+    const index = steps.indexOf(status);
+    return ((index + 1) / steps.length) * 100;
   };
 
   return (
@@ -39,24 +56,24 @@ function TrackOrder() {
               <div
                 style={{
                   ...styles.progressBar,
-                  width: `${getProgressPercent(order.trackingSteps)}%`
+                  width: `${getProgressPercent(order.status)}%`
                 }}
               />
             </div>
 
             {/* TIMELINE */}
             <div style={styles.timeline}>
-              {order.trackingSteps.map((step, index) => (
+              {["Order Packed", "Shipped", "Out for Delivery", "Delivered"].map((step, index) => (
                 <div key={index} style={styles.step}>
                   <div
                     style={{
                       ...styles.circle,
-                      background: step.completed ? "#4caf50" : "#ccc"
+                      background: ["Order Packed", "Shipped", "Out for Delivery", "Delivered"].indexOf(order.status) >= index ? "#4caf50" : "#ccc"
                     }}
                   >
-                    {step.completed ? "✓" : ""}
+                    {["Order Packed", "Shipped", "Out for Delivery", "Delivered"].indexOf(order.status) >= index ? "✓" : ""}
                   </div>
-                  <p>{step.step}</p>
+                  <p>{step}</p>
                 </div>
               ))}
             </div>

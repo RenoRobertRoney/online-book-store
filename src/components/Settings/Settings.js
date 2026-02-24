@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 function Settings() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -13,9 +14,19 @@ function Settings() {
   );
 
   /* ================= ADDRESSES ================= */
-  const [addresses, setAddresses] = useState(
-    JSON.parse(localStorage.getItem("addresses")) || []
-  );
+  const [addresses, setAddresses] = useState([]);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+    if (user && token) {
+      axios.get(`http://localhost:5000/api/users/address`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => setAddresses(res.data))
+        .catch(err => console.error(err));
+    }
+  }, []);
 
   const [newAddress, setNewAddress] = useState({
     country: "India",
@@ -36,59 +47,100 @@ function Settings() {
     confirm: ""
   });
 
-  /* ================= SAVE ADDRESSES ================= */
-  useEffect(() => {
-    localStorage.setItem("addresses", JSON.stringify(addresses));
-  }, [addresses]);
-
   /* ================= HANDLERS ================= */
-  const saveProfile = () => {
-    localStorage.setItem("profile", JSON.stringify(profile));
-    alert("Profile updated successfully");
+  const saveProfile = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return alert("Please login");
+
+    try {
+      await axios.put("http://localhost:5000/api/users/profile", {
+        email: user.email,
+        name: profile.username,
+        phone: profile.phone
+      });
+
+      // Update local storage to reflect changes
+      localStorage.setItem("profile", JSON.stringify(profile));
+      alert("Profile updated successfully");
+    } catch (err) {
+      console.error("Error updating profile", err);
+      alert("Failed to update profile");
+    }
   };
 
-  const addAddress = () => {
+  const addAddress = async () => {
     if (!newAddress.fullName || !newAddress.mobile || !newAddress.pincode) {
       alert("Please fill required fields");
       return;
     }
 
-    setAddresses([
-      ...addresses,
-      {
-        id: Date.now(),
-        ...newAddress,
-        default: addresses.length === 0
-      }
-    ]);
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return alert("Please login");
 
-    setNewAddress({
-      country: "India",
-      fullName: "",
-      mobile: "",
-      pincode: "",
-      house: "",
-      area: "",
-      landmark: "",
-      city: "",
-      state: ""
-    });
+    try {
+      const addressToAdd = {
+        id: Date.now().toString(),
+        ...newAddress
+      };
+      const token = localStorage.getItem("token");
+      const res = await axios.post("http://localhost:5000/api/users/address/add", {
+        address: addressToAdd
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setAddresses(res.data);
+
+      setNewAddress({
+        country: "India",
+        fullName: "",
+        mobile: "",
+        pincode: "",
+        house: "",
+        area: "",
+        landmark: "",
+        city: "",
+        state: ""
+      });
+    } catch (err) {
+      console.error("Error adding address", err);
+    }
   };
 
-  const setDefaultAddress = (id) => {
-    setAddresses(
-      addresses.map((addr) => ({
-        ...addr,
-        default: addr.id === id
-      }))
-    );
+  const setDefaultAddress = async (id) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post("http://localhost:5000/api/users/address/default", {
+        id: id
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setAddresses(res.data);
+    } catch (err) {
+      console.error("Error setting default address", err);
+    }
   };
 
-  const deleteAddress = (id) => {
-    setAddresses(addresses.filter((addr) => addr.id !== id));
+  const deleteAddress = async (id) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post("http://localhost:5000/api/users/address/remove", {
+        id: id
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setAddresses(res.data);
+    } catch (err) {
+      console.error("Error deleting address", err);
+    }
   };
 
-  const changePassword = () => {
+  const changePassword = async () => {
     if (!password.username || !password.newPass) {
       alert("Fill all fields");
       return;
@@ -99,13 +151,27 @@ function Settings() {
       return;
     }
 
-    setProfile({ ...profile, username: password.username });
-    localStorage.setItem(
-      "profile",
-      JSON.stringify({ ...profile, username: password.username })
-    );
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return alert("Please login");
 
-    alert("Username & Password updated successfully");
+    try {
+      await axios.put("http://localhost:5000/api/users/profile", {
+        email: user.email,
+        name: password.username,
+        password: password.newPass
+      });
+
+      setProfile({ ...profile, username: password.username });
+      localStorage.setItem(
+        "profile",
+        JSON.stringify({ ...profile, username: password.username })
+      );
+
+      alert("Username & Password updated successfully");
+    } catch (err) {
+      console.error("Error updating password", err);
+      alert("Failed to update password");
+    }
   };
 
   return (

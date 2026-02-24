@@ -1,14 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import books from "../data/books";
+import axios from "axios";
 import "./Home.css";
 
 function Home() {
+  const [books, setBooks] = useState([]);
   const [search, setSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(12);
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/books")
+      .then((res) => setBooks(res.data))
+      .catch((err) => console.error("Error fetching books:", err));
+  }, []);
 
   const sort = new URLSearchParams(location.search).get("sort");
 
@@ -23,8 +30,8 @@ function Home() {
   if (sort === "price-low") filteredBooks.sort((a, b) => a.price - b.price);
   if (sort === "price-high") filteredBooks.sort((a, b) => b.price - a.price);
   if (sort === "top-rated") filteredBooks.sort((a, b) => b.rating - a.rating);
-  if (sort === "newest") filteredBooks.sort((a, b) => b.id - a.id);
-  if (sort === "oldest") filteredBooks.sort((a, b) => a.id - b.id);
+  if (sort === "newest") filteredBooks.sort((a, b) => b._id.localeCompare(a._id));
+  if (sort === "oldest") filteredBooks.sort((a, b) => a._id.localeCompare(b._id));
   if (sort === "most-bought")
     filteredBooks.sort((a, b) => (b.bought || 0) - (a.bought || 0));
 
@@ -38,21 +45,65 @@ function Home() {
     navigate(`/?sort=${e.target.value}`);
   };
 
-  /* ================= 🔐 WISHLIST PROTECTION ================= */
-  const addToWishlist = (book) => {
+  /* ================= 🛒 CART LOGIC ================= */
+  const addToCart = async (book) => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
 
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !user || !token) {
+      alert("Please login to add books to cart");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await axios.post(
+        "http://localhost:5000/api/cart",
+        {
+          userId: user.userId, // Use userId from stored user object
+          item: { ...book, quantity: 1 } // Ensure item has quantity
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      alert("Added to Cart 🛒");
+    } catch (err) {
+      console.error("Error adding to cart", err);
+      alert("Failed to add to cart");
+    }
+  };
+
+  /* ================= 🔐 WISHLIST PROTECTION ================= */
+  const addToWishlist = async (book) => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!isLoggedIn || !user || !token) {
       alert("Please login to add books to wishlist");
       navigate("/login");
       return;
     }
 
-    const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-    if (!wishlist.find((b) => b.id === book.id)) {
-      wishlist.push(book);
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    try {
+      await axios.post(
+        "http://localhost:5000/api/wishlist",
+        {
+          userId: user.userId,
+          item: book
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
       alert("Added to Wishlist ❤️");
+    } catch (err) {
+      console.error("Error adding to wishlist", err);
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message);
+      }
     }
   };
 
@@ -60,80 +111,82 @@ function Home() {
     <div className="home">
       {/* ================= HERO ================= */}
       <section className="hero">
-        <h1>Discover Your Next Favorite Book</h1>
-        <p>Search, explore and buy books online</p>
-
-        <input
-          type="text"
-          className="home-search"
-          placeholder="Search by title or author..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="hero-content">
+          <h1>Discover Your Next Favorite Book</h1>
+          <p>Explore our curated collection of bestsellers, classics, and hidden gems.</p>
+          <input
+            type="text"
+            className="hero-search"
+            placeholder="Search by title, author, or ISBN..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </section>
 
-      {/* ================= SORT BAR ================= */}
-      <div className="sort-container">
-        <div className="sort-box colorful">
-          <span>Sort by</span>
-          <select value={sort || ""} onChange={handleSortChange}>
-            <option value="">Recommended</option>
-            <option value="top-rated">⭐ Top Rated</option>
-            <option value="most-bought">🔥 Most Bought</option>
-            <option value="price-low">💰 Price: Low → High</option>
-            <option value="price-high">💰 Price: High → Low</option>
-            <option value="newest">🆕 Newest</option>
-            <option value="oldest">📜 Oldest</option>
-          </select>
-        </div>
+      {/* ================= FILTERS ================= */}
+      <div className="filters-container">
+        <h2>{search ? `Results for "${search}"` : "Trending Now"}</h2>
+        <select className="sort-select" value={sort || ""} onChange={handleSortChange}>
+          <option value="">Sort by: Recommended</option>
+          <option value="top-rated">⭐ Top Rated</option>
+          <option value="most-bought">🔥 Best Sellers</option>
+          <option value="price-low">💰 Price: Low to High</option>
+          <option value="price-high">💰 Price: High to Low</option>
+          <option value="newest">🆕 Newest Arrivals</option>
+        </select>
       </div>
 
-      {/* ================= BOOK LIST ================= */}
-      <section className="featured">
-        <h2>{search ? "Search Results" : "Popular Books"}</h2>
-
-        <div className="book-grid">
-          {displayBooks.map((book) => (
-            <div className="book-card" key={book.id}>
+      {/* ================= BOOK GRID ================= */}
+      <div className="book-grid">
+        {displayBooks.map((book) => (
+          <div className="book-card" key={book._id}>
+            <div className="book-image-container">
               <img src={book.image} alt={book.title} />
-
-              <h3>{book.title}</h3>
-              <p className="author">{book.author}</p>
-
-              <p className="rating">
-                {"★".repeat(Math.round(book.rating))}
-                {"☆".repeat(5 - Math.round(book.rating))}
-                <span className="rating-value"> ({book.rating})</span>
-              </p>
-
-              <p className="price">₹{book.price}</p>
-
-              <div className="card-actions">
+              <div className="book-overlay">
                 <button
-                  className="details-btn"
-                  onClick={() => navigate(`/book/${book.id}`)}
+                  className="quick-view-btn"
+                  onClick={() => navigate(`/book/${book._id}`)}
                 >
                   View Details
                 </button>
+              </div>
+            </div>
 
+            <div className="book-info">
+              <h3 className="book-title" title={book.title}>{book.title}</h3>
+              <p className="book-author">{book.author}</p>
+
+              <div className="book-meta">
+                <span className="book-price">₹{book.price}</span>
+                <span className="book-rating">★ {book.rating}</span>
+              </div>
+
+              <div className="book-actions">
                 <button
-                  className="wishlist-btn"
-                  title="Add to Wishlist"
+                  className="add-btn cart-btn"
+                  onClick={() => addToCart(book)}
+                >
+                  🛒 Add to Cart
+                </button>
+                <button
+                  className="add-btn wishlist-btn"
                   onClick={() => addToWishlist(book)}
                 >
                   ❤️
                 </button>
               </div>
             </div>
-          ))}
-        </div>
-
-        {!search && visibleCount < filteredBooks.length && (
-          <div className="load-more">
-            <button onClick={loadMoreBooks}>Load More Books</button>
           </div>
-        )}
-      </section>
+        ))}
+      </div>
+
+      {/* ================= LOAD MORE ================= */}
+      {!search && visibleCount < filteredBooks.length && (
+        <div className="load-more">
+          <button onClick={loadMoreBooks}>Load More Books</button>
+        </div>
+      )}
     </div>
   );
 }

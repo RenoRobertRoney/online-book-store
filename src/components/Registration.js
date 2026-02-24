@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Auth.css";
 
 function Registration() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -14,7 +16,7 @@ function Registration() {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!user.name || !user.email || !user.password) {
@@ -22,12 +24,24 @@ function Registration() {
       return;
     }
 
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("role", "user");
-    localStorage.setItem("isLoggedIn", "true");
+    setLoading(true);
 
-    alert("Registration Successful!");
-    navigate("/");
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/register", user);
+      if (response.status === 201) {
+        alert("Registration Successful!");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Registration Error:", error);
+      if (error.response && error.response.data) {
+        alert(error.response.data.message);
+      } else {
+        alert("Registration failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,7 +71,9 @@ function Registration() {
             onChange={handleChange}
           />
 
-          <button type="submit">Register</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Registering..." : "Register"}
+          </button>
         </form>
 
         <p>
