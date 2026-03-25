@@ -5,7 +5,7 @@ function Footer() {
         <footer className="footer">
             <div className="footer-content">
                 <div className="footer-section">
-                    <h3>📚 BookStore</h3>
+                    <h3>📚 BookVerse</h3>
                     <p>Your one-stop destination for all your reading cravings. From bestsellers to hidden gems, we bring the world of stories to your doorstep.</p>
                 </div>
 
@@ -18,7 +18,7 @@ function Footer() {
                 <div className="footer-section">
                     <h4>Contact Us</h4>
                     <p>📍 123 Library Plaza, Ernakulam, Kerala, India</p>
-                    <p>📧 support@bookstore.com</p>
+                    <p>📧 support@bookverse.com</p>
                     <p>📞 91 9961300926</p>
                 </div>
 

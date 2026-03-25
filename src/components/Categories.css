@@ -1,189 +1,247 @@
 /* ================= GLOBAL ================= */
 .categories-container {
-  padding: 60px 80px;
-  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  padding: 80px 10%;
   min-height: 100vh;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1a1a1a;
+  position: relative;
+  overflow-x: hidden;
+  background-color: #fbfaf8;
+  /* Fallback */
+}
+
+/* Blurred Bookshelf Background */
+.categories-container::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('https://images.rawpixel.com/image_social_landscape/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI1LTA0L3Jhd3BpeGVsX29mZmljZV8zOF9waG90b19odWdlX2Jvb2tzaGVsZl9mdWxsZnJhbWVfYTdhMjExZmUtYzBiZC00ZDI0LTgxMGMtMDZjNDA0ZDFkMjAxLWpvYjIwMTYtbTlqZ25ic3UuanBn.jpg=80');
+  background-size: cover;
+  background-position: center;
+  filter: blur(8px);
+  z-index: -1;
+}
+
+/* Subtle Frosted Overlay */
+.categories-container::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(251, 250, 248, 0.85);
+  /* 85% opacity for a premium frost effect */
+  z-index: -1;
 }
 
 /* ================= TITLE ================= */
 .categories-title {
   text-align: center;
-  font-size: 48px;
+  font-size: 64px;
   font-weight: 800;
-  margin-bottom: 70px;
-  background: linear-gradient(90deg, #111827, #4b5563);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -1px;
+  margin-bottom: 90px;
+  color: #111827;
+  letter-spacing: -2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 1;
 }
 
 /* ================= SECTION ================= */
 .category-section {
-  margin-bottom: 70px;
+  margin-bottom: 100px;
+  position: relative;
+  z-index: 1;
 }
 
 .section-title {
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 700;
-  margin-bottom: 30px;
-  color: #1f2937;
-  border-left: 5px solid #2563eb;
-  padding-left: 15px;
+  margin-bottom: 45px;
+  color: #111827;
+  border-left: 8px solid #111827;
+  padding-left: 25px;
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.5px;
 }
 
 /* ================= GRID ================= */
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 45px;
 }
 
 /* ================= CARD ================= */
 .category-card {
-  height: 140px;
-  border-radius: 20px;
+  height: 200px;
+  border-radius: 24px;
   color: #fff;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
   text-align: center;
   position: relative;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1), 0 5px 15px -5px rgba(0, 0, 0, 0.05);
+  background-size: cover;
+  background-position: center;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
 }
 
-.category-card span {
-  font-size: 36px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  transition: transform 0.3s ease;
+/* Dark Overlay for Readability */
+.category-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  transition: background 0.4s ease;
+  z-index: 1;
 }
 
+.category-card>* {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Premium Hover Effect */
 .category-card:hover {
-  transform: translateY(-10px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  transform: translateY(-12px) scale(1.03);
+  /* Added subtle scaling */
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.2);
 }
 
-.category-card:hover span {
-  transform: scale(1.2) rotate(5deg);
+.category-card:hover::before {
+  background: rgba(0, 0, 0, 0.2);
 }
 
-/* ================= GRADIENTS (Premium & Glassy) ================= */
+/* ================= BACKGROUND IMAGES ================= */
 /* Fiction */
 .fantasy {
-  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80');
 }
 
 .romance {
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+  background-image: url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?auto=format&fit=crop&w=800&q=80');
+  /* Couple holding hands, warm sunset */
 }
 
 .scifi {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80');
 }
 
 .mystery {
-  background: linear-gradient(135deg, #434343 0%, black 100%);
+  background-image: url('https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=800&q=80');
 }
 
 .horror {
-  background: linear-gradient(135deg, #09203f 0%, #537895 100%);
+  background-image: url('https://plus.unsplash.com/premium_vector-1722702997976-223c9bbb2b57?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D=80');
+  /* Dark moody house/forest */
 }
 
 .literary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=800&q=80');
 }
 
 /* Non-Fiction */
 .biography {
-  background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+  background-image: url('https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=800&q=80');
 }
 
 .history {
-  background: linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%);
-  color: #1f2937;
+  background-image: url('https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=800&q=80');
 }
 
 .selfhelp {
-  background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
-  color: #1f2937;
+  background-image: url('https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80');
 }
 
 .science {
-  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80');
 }
 
 .cooking {
-  background: linear-gradient(to right, #fa709a 0%, #fee140 100%);
+  background-image: url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80');
 }
 
 .business {
-  background: linear-gradient(to top, #30cfd0 0%, #330867 100%);
+  background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80');
 }
 
 /* Special */
 .manga {
-  background: linear-gradient(to top, #ff0844 0%, #ffb199 100%);
+  background-image: url('https://cdn.shopify.com/s/files/1/0638/7289/3119/files/mangas_480x480.jpg?v=1720570170=80');
+  /* B&W Manga panels */
 }
 
 .comics {
-  background: linear-gradient(to top, #c79081 0%, #dfa579 100%);
+  background-image: url('https://images.unsplash.com/photo-1588497859490-85d1c17db96d?auto=format&fit=crop&w=800&q=80');
+  /* Colorful comic book panels */
 }
 
 .young {
-  background: linear-gradient(to top, #5f72bd 0%, #9b23ea 100%);
+  background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80');
 }
 
 .children {
-  background: linear-gradient(to top, #00c6fb 0%, #005bea 100%);
+  background-image: url('https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80');
 }
 
 .arts {
-  background: linear-gradient(to top, #9890e3 0%, #b1f4cf 100%);
-  color: #333;
+  background-image: url('https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=800&q=80');
 }
 
 .tech {
-  background: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+  background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80');
 }
 
 .travel {
-  background: linear-gradient(to top, #48c6ef 0%, #6f86d6 100%);
+  background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80');
 }
 
 .philosophy {
-  background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+  background-image: url('https://images.unsplash.com/photo-1529154036614-a60975f5c760?auto=format&fit=crop&w=800&q=80');
 }
 
 /* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .categories-container {
+    padding: 60px 40px;
+  }
+}
+
 @media (max-width: 768px) {
   .categories-container {
-    padding: 30px 20px;
+    padding: 40px 20px;
   }
 
   .categories-title {
-    font-size: 32px;
-    margin-bottom: 40px;
+    font-size: 40px;
+    margin-bottom: 50px;
   }
 
   .category-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
   }
 
   .category-card {
-    height: 120px;
-    font-size: 16px;
-  }
-
-  .category-card span {
-    font-size: 28px;
+    height: 160px;
+    font-size: 22px;
+    border-radius: 20px;
   }
 }

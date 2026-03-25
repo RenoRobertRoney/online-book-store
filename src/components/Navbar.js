@@ -44,12 +44,12 @@ function Navbar() {
         <Link to="/">Home</Link>
         <Link to="/categories">Categories</Link>
         <Link to="/wishlist">
-          ❤️ Wishlist {wishlistCount > 0 && <span className="badge">{wishlistCount}</span>}
+           Wishlist {wishlistCount > 0 && <span className="badge">{wishlistCount}</span>}
         </Link>
         <Link to="/cart">
-          🛒 Cart {cartCount > 0 && <span className="badge">{cartCount}</span>}
+           Cart {cartCount > 0 && <span className="badge">{cartCount}</span>}
         </Link>
-        <Link to="/track-order">🚚 Track Order</Link>
+        <Link to="/track-order"> Track Order</Link>
       </div>
 
       <div className="nav-right">
